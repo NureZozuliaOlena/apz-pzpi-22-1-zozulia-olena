@@ -1,1 +1,271 @@
+Міністерство освіти та науки України
+Харківський національний університет радіоелектроніки
 
+
+Кафедра програмної інженерії
+
+
+ЗВІТ
+до лабораторної роботи №2
+з дисципліни “Архітектура програмного забезпечення”
+
+
+Виконала ст. гр ПЗПІ-22-1
+Зозуля Олена Юріївна
+
+Перевірив
+ст. викладач кафедри ПІ
+Сокорчук Ігор Петрович
+
+
+
+
+Харків 2025
+1 ІСТОРІЯ ЗМІН
+№ДатаВерсія звітуОпис змін та виправлень122.04.20250.1Створення звіту217.05.20250.2Додано графічні матеріали319.05.20250.3Додано посилання на відеозапис
+2 ЗАВДАННЯ
+     Допрацювати серверну частину, яка була розроблена в минулому семестрі.
+3 ОПИС ВИКОНАНОЇ РОБОТИ
+     Під час виконання даної лабораторної роботи була використана серверна частина, яка була розроблена в минулому семестрі. 
+     Для розробки проєкту було обрано мову програмування C# у поєднанні з платформою ASP.NET Core, оскільки вони забезпечують високу продуктивність і надійність. Архітектура проєкту базується на принципах чистої архітектури з поділом на шари: контролери, сервіси, репозиторії, моделі та DTO. Контролери обробляють HTTP-запити, сервіси реалізують бізнес-логіку, репозиторії відповідають за взаємодію з базою даних, а моделі та DTO забезпечують передачу даних між шарами. Для роботи з базою даних застосовано Entity Framework Core з підходом Code-First, що спрощує створення запитів і формування структури бази даних із коду.
+     У системі визначено кілька типів ролей користувачів із різними рівнями доступу до функціоналу. Адміністратор системи має повний доступ до всіх можливостей системи, включаючи управління користувачами, налаштування, моніторинг і створення резервних копій даних. Адміністратор компанії має доступ лише до функціоналу, пов’язаного з його компанією. Підрядники отримують обмежений доступ, який стосується виключно їхньої зони відповідальності. Звичайні працівники не мають доступу до системи взагалі. 
+     У модулі моніторингу температури холодильників, що є частиною серверної логіки, застосовуються математичні методи для обробки температурних даних. Система аналізує серію вимірювань для обчислення статистичних характеристик: середнього значення температури, дисперсії та середньоквадратичного відхилення, що дозволяє контролювати стабільність умов зберігання. 
+     Відеозапис роботи системи наведено в додатку А. ER-діаграма представлена в додатку Б на рисунку Б.1, структура бази даних – на рисунку Б.2. UML-діаграма прецедентів зображена на рисунку Б.3, а діаграма розгортання – на рисунку Б.4.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+4 ВИСНОВКИ
+     У ході виконання лабораторної роботи я допрацювала серверну частину, яка була розроблена в минулому семестрі.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ДОДАТОК А
+Відеозапис
+Відеозапис презентації результатів лабораторної роботи: https://youtu.be/sDB2mJwdTFk 
+Хронологічний опис відеозапису:
+
+00:00 – Вступ
+00:11 – Мета лабораторної роботи
+00:18 – Налаштування доступу до даних для різних ролей користувачів
+02:15 – Математична обробка даних для моніторингу
+04:53 – Резервне копіювання бази даних
+06:27 – Відновлення бази даних
+07:15 – Подяка за перегляд
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ДОДАТОК Б
+Графічні матеріали
+
+Рисунок Б.1 — ER-діаграма даних
+
+Рисунок Б.2 — Структура бази даних
+
+Рисунок Б.3 — UML-діаграма прецедентів
+
+Рисунок Б.4 — Діаграма розгортання
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ДОДАТОК В
+Програмний код
+     В.1 Математична обробка прикладних даних
+
+GitHub репозиторій: https://github.com/NureZozuliaOlena/apz-pzpi-22-1-zozulia-olena/blob/main/Lab2/pzpi-22-1-zozulia-olena-lab2/Controllers/DeviceController.cs 
+  1 [HttpPost("fridge/{fridgeId}/temperature-log")]
+  2         public async Task<IActionResult> AddTemperatureLog(Guid fridgeId, [FromBody] TemperatureLogDto logDto)
+  3         {
+  4             if (!await IsAuthorizedFridge(fridgeId))
+  5                 return Forbid("Access denied. Fridge does not belong to your company.");
+  6
+  7             var log = new TemperatureLogDto
+  8             {
+  9                 Id = Guid.NewGuid(),
+ 10                 FridgeId = fridgeId,
+ 11                 Timestamp = DateTime.UtcNow,
+ 12                 Temperature = logDto.Temperature
+ 13             };
+ 14
+ 15             _temperatureLogs.AddOrUpdate(fridgeId,
+ 16                 new List<TemperatureLogDto> { log },
+ 17                 (key, existingLogs) =>
+ 18                 {
+ 19                     existingLogs.Add(log);
+ 20                     return existingLogs;
+ 21                 });
+ 22
+ 23             var existingLogs = _temperatureLogs[fridgeId];
+ 24
+ 25             if (existingLogs.Count > 1)
+ 26             {
+ 27                 double lastTemperature = existingLogs[^2].Temperature;
+ 28                 double temperatureDifference = Math.Abs(lastTemperature - log.Temperature);
+ 29
+ 30                 const double fluctuationThreshold = 5.0;
+ 31
+ 32                 if (temperatureDifference > fluctuationThreshold)
+ 33                 {
+ 34                     var notification = new Notification
+ 35                     {
+ 36                         Title = "Warning: High temperature fluctuation detected!",
+ 37                         Text = $"Temperature fluctuated by {temperatureDifference:F1}°C. Last: {lastTemperature:F1}°C, Current: {log.Temperature:F1}°C.",
+ 38                         DateTimeCreated = DateTime.UtcNow,
+ 39                         FridgeId = fridgeId
+ 40                     };
+ 41
+ 42                     await _notificationRepository.AddAsync(notification);
+ 43                 }
+ 44             }
+ 45
+ 46             return Ok(new { message = "Temperature log added successfully" });
+ 47         }
+
+     В.2 Адміністрування бізнес-логіки системи
+
+GitHub репозиторій: https://github.com/NureZozuliaOlena/apz-pzpi-22-1-zozulia-olena/blob/main/Lab2/pzpi-22-1-zozulia-olena-lab2/Controllers/AuthController.cs 
+  1 [HttpPost("register")]
+  2         public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
+  3         {
+  4             if (string.IsNullOrEmpty(registerDto.FirstName) ||
+  5                 string.IsNullOrEmpty(registerDto.LastName) ||
+  6                 string.IsNullOrEmpty(registerDto.Email) ||
+  7                 string.IsNullOrEmpty(registerDto.Password) ||
+  8                 string.IsNullOrEmpty(registerDto.PhoneNumber) ||
+  9                 registerDto.DateOfBirth == default)
+ 10             {
+ 11                 return BadRequest("All fields are required.");
+ 12             }
+ 13
+ 14             var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == registerDto.Email);
+ 15             if (existingUser != null)
+ 16             {
+ 17                 return Conflict("User with this email already exists.");
+ 18             }
+ 19
+ 20             if (!Enum.IsDefined(typeof(UserRole), registerDto.Role))
+ 21             {
+ 22                 return BadRequest("Invalid role selected.");
+ 23             }
+ 24
+ 25             var user = new User
+ 26             {
+ 27                 Id = Guid.NewGuid(),
+ 28                 FirstName = registerDto.FirstName,
+ 29                 LastName = registerDto.LastName,
+ 30                 DateOfBirth = registerDto.DateOfBirth,
+ 31                 PhoneNumber = registerDto.PhoneNumber,
+ 32                 Email = registerDto.Email,
+ 33                 PasswordHash = PasswordHelper.HashPassword(registerDto.Password),
+ 34                 Role = registerDto.Role
+ 35             };
+ 36
+ 37             _context.Users.Add(user);
+ 38             await _context.SaveChangesAsync();
+ 39
+ 40             return Ok("User registered successfully.");
+ 41         }
+
+     В.3 Резервне копіювання користувацьких даних
+GitHub репозиторій: https://github.com/NureZozuliaOlena/apz-pzpi-22-1-zozulia-olena/blob/main/Lab2/pzpi-22-1-zozulia-olena-lab2/Controllers/BackupController.cs 
+  1 [HttpGet("create-backup")]
+  2         public async Task<IActionResult> CreateBackup([FromQuery] string folderPath)
+  3         {
+  4             if (string.IsNullOrEmpty(folderPath))
+  5             {
+  6                 return BadRequest("Error! Folder path is not provided.");
+  7             }
+  8
+  9             if (!Directory.Exists(folderPath))
+ 10             {
+ 11                 return BadRequest("Error! Specified folder does not exist.");
+ 12             }
+ 13
+ 14             string backupFilePath = Path.Combine(folderPath, "SmartLunchDatabaseBackup.bak");
+ 15
+ 16             try
+ 17             {
+ 18                 using (var connection = new SqlConnection(_dbConnectionString))
+ 19                 {
+ 20                     await connection.OpenAsync();
+ 21                     string query = @"
+ 22                         BACKUP DATABASE [SmartLunchDb]
+ 23                         TO DISK = @BackupPath
+ 24                         WITH FORMAT, INIT;";
+ 25
+ 26                     using (var command = new SqlCommand(query, connection))
+ 27                     {
+ 28                         command.Parameters.AddWithValue("@BackupPath", backupFilePath);
+ 29                         await command.ExecuteNonQueryAsync();
+ 30                     }
+ 31                 }
+ 32
+ 33                 return Ok($"Backup created successfully at {backupFilePath}");
+ 34             }
+ 35             catch (Exception ex)
+ 36             {
+ 37                 return StatusCode(500, $"Error creating backup: {ex.Message}");
+ 38             }
+ 39         }
