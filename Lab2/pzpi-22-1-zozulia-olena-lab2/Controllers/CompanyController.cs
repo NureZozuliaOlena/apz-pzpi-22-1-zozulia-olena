@@ -7,7 +7,7 @@ using Repositories;
 
 namespace Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "SuperAdmin,Admin")]
     [ApiController]
     [Route("api/[controller]")]
     public class CompanyController : ControllerBase
@@ -26,9 +26,30 @@ namespace Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var companies = await _companyRepository.GetAllAsync();
-            var companyDtos = _mapper.Map<List<CompanyDto>>(companies);
-            return Ok(companyDtos);
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+
+            if (role == "SuperAdmin")
+            {
+                var companies = await _companyRepository.GetAllAsync();
+                var companyDtos = _mapper.Map<List<CompanyDto>>(companies);
+                return Ok(companyDtos);
+            }
+
+            if (role == "Admin")
+            {
+                var companyIdClaim = User.FindFirst("CompanyId")?.Value;
+                if (!Guid.TryParse(companyIdClaim, out Guid companyId))
+                    return BadRequest("Invalid CompanyId claim.");
+
+                var company = await _companyRepository.GetByIdAsync(companyId);
+                if (company == null)
+                    return NotFound();
+
+                var companyDto = _mapper.Map<CompanyDto>(company);
+                return Ok(new List<CompanyDto> { companyDto });
+            }
+
+            return Forbid();
         }
 
         [HttpGet("{id}")]
@@ -36,12 +57,30 @@ namespace Controllers
         {
             var company = await _companyRepository.GetByIdAsync(id);
             if (company == null)
-            {
                 return NotFound();
+
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+
+            if (role == "SuperAdmin")
+            {
+                var companyDto = _mapper.Map<CompanyDto>(company);
+                return Ok(companyDto);
             }
 
-            var companyDto = _mapper.Map<CompanyDto>(company);
-            return Ok(companyDto);
+            if (role == "Admin")
+            {
+                var companyIdClaim = User.FindFirst("CompanyId")?.Value;
+                if (!Guid.TryParse(companyIdClaim, out Guid companyId))
+                    return BadRequest("Invalid CompanyId claim.");
+
+                if (company.Id != companyId)
+                    return Forbid("Access denied. This is not your company.");
+
+                var companyDto = _mapper.Map<CompanyDto>(company);
+                return Ok(companyDto);
+            }
+
+            return Forbid();
         }
 
         [HttpPost]
@@ -81,21 +120,28 @@ namespace Controllers
         public async Task<IActionResult> Update(Guid id, [FromBody] CompanyDto companyDto)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
-            var existingCompany = await _companyRepository.GetByIdAsync(id);
-            if (existingCompany == null)
-            {
+            var company = await _companyRepository.GetByIdAsync(id);
+            if (company == null)
                 return NotFound();
+
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+
+            if (role == "Admin")
+            {
+                var companyIdClaim = User.FindFirst("CompanyId")?.Value;
+                if (!Guid.TryParse(companyIdClaim, out Guid companyId))
+                    return BadRequest("Invalid CompanyId claim.");
+
+                if (company.Id != companyId)
+                    return Forbid("Access denied. This is not your company.");
             }
 
-            _mapper.Map(companyDto, existingCompany);
-            await _companyRepository.UpdateAsync(existingCompany);
-
-            var updatedCompanyDto = _mapper.Map<CompanyDto>(existingCompany);
-            return Ok(updatedCompanyDto);
+            _mapper.Map(companyDto, company);
+            await _companyRepository.UpdateAsync(company);
+            var updatedDto = _mapper.Map<CompanyDto>(company);
+            return Ok(updatedDto);
         }
 
         [HttpDelete("{id}")]
@@ -103,8 +149,18 @@ namespace Controllers
         {
             var company = await _companyRepository.GetByIdAsync(id);
             if (company == null)
-            {
                 return NotFound();
+
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+
+            if (role == "Admin")
+            {
+                var companyIdClaim = User.FindFirst("CompanyId")?.Value;
+                if (!Guid.TryParse(companyIdClaim, out Guid companyId))
+                    return BadRequest("Invalid CompanyId claim.");
+
+                if (company.Id != companyId)
+                    return Forbid("Access denied. This is not your company.");
             }
 
             await _companyRepository.DeleteAsync(id);

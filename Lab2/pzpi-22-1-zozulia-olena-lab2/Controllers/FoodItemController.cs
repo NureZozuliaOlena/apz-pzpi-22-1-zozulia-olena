@@ -7,18 +7,20 @@ using Repositories;
 
 namespace Controllers
 {
-    [Authorize(Roles = "Admin,Contractor")]
+    [Authorize(Roles = "SuperAdmin,Admin")]
     [ApiController]
     [Route("api/[controller]")]
     public class FoodItemController : ControllerBase
     {
         private readonly IFoodItemRepository _foodItemRepository;
         private readonly IMapper _mapper;
+        private readonly SmartLunchDbContext _context;
 
-        public FoodItemController(IFoodItemRepository foodItemRepository, IMapper mapper)
+        public FoodItemController(IFoodItemRepository foodItemRepository, IMapper mapper, SmartLunchDbContext smartLunchDbContext)
         {
             _foodItemRepository = foodItemRepository;
             _mapper = mapper;
+            _context = smartLunchDbContext;
         }
 
         [HttpGet]

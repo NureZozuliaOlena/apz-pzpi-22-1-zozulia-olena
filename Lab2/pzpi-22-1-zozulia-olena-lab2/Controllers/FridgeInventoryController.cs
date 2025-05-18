@@ -8,7 +8,7 @@ using Service;
 
 namespace Controllers
 {
-    [Authorize(Roles = "Admin,Contractor")]
+    [Authorize(Roles = "SuperAdmin,Admin,Contractor")]
     [ApiController]
     [Route("api/[controller]")]
     public class FridgeInventoryController : ControllerBase
@@ -17,25 +17,55 @@ namespace Controllers
         private readonly IFridgeRepository _fridgeRepository;
         private readonly IMapper _mapper;
         private readonly PredictionService _predictionService;
+        private readonly SmartLunchDbContext _context;
 
         public FridgeInventoryController(
             IFridgeInventoryRepository fridgeInventoryRepository,
             IFridgeRepository fridgeRepository,
             IMapper mapper,
-            PredictionService predictionService)
+            PredictionService predictionService,
+            SmartLunchDbContext context)
         {
             _fridgeInventoryRepository = fridgeInventoryRepository;
             _fridgeRepository = fridgeRepository;
             _mapper = mapper;
             _predictionService = predictionService;
+            _context = context;
+        }
+
+        private string GetUserRole() =>
+            User.FindFirst(ClaimTypes.Role)?.Value;
+
+        private Guid? GetCompanyIdFromClaims()
+        {
+            var companyIdStr = User.FindFirst("CompanyId")?.Value;
+            return Guid.TryParse(companyIdStr, out var id) ? id : null;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var fridgeInventories = await _fridgeInventoryRepository.GetAllAsync();
-            var fridgeInventoryDtos = _mapper.Map<List<FridgeInventoryDto>>(fridgeInventories);
-            return Ok(fridgeInventoryDtos);
+            var role = GetUserRole();
+
+            if (role == "SuperAdmin")
+            {
+                var fridgeInventories = await _fridgeInventoryRepository.GetAllAsync();
+                var fridgeInventoryDtos = _mapper.Map<List<FridgeInventoryDto>>(fridgeInventories);
+                return Ok(fridgeInventoryDtos);
+            }
+            else
+            {
+                var companyId = GetCompanyIdFromClaims();
+                if (companyId == null) return Forbid("Invalid or missing CompanyId");
+
+                var inventories = await _context.FridgeInventories
+                    .Include(fi => fi.Fridge)
+                    .Where(fi => fi.Fridge.CompanyId == companyId)
+                    .ToListAsync();
+
+                var dtos = _mapper.Map<List<FridgeInventoryDto>>(inventories);
+                return Ok(dtos);
+            }
         }
 
         [HttpGet("{id}")]
@@ -45,6 +75,16 @@ namespace Controllers
             if (fridgeInventory == null)
             {
                 return NotFound();
+            }
+
+            var role = GetUserRole();
+            if (role != "SuperAdmin")
+            {
+                var companyId = GetCompanyIdFromClaims();
+                if (companyId == null) return Forbid("Invalid or missing CompanyId");
+
+                if (fridgeInventory.Fridge.CompanyId != companyId)
+                    return Forbid("Access denied.");
             }
 
             var fridgeInventoryDto = _mapper.Map<FridgeInventoryDto>(fridgeInventory);
@@ -65,8 +105,17 @@ namespace Controllers
                 return NotFound($"Fridge with ID {fridgeInventoryDto.FridgeId} not found.");
             }
 
-            var fridgeInventory = _mapper.Map<FridgeInventory>(fridgeInventoryDto);
+            var role = GetUserRole();
+            if (role != "SuperAdmin")
+            {
+                var companyId = GetCompanyIdFromClaims();
+                if (companyId == null) return Forbid("Invalid or missing CompanyId");
 
+                if (fridge.CompanyId != companyId)
+                    return Forbid("You cannot add inventory to a fridge outside your company.");
+            }
+
+            var fridgeInventory = _mapper.Map<FridgeInventory>(fridgeInventoryDto);
             await _fridgeInventoryRepository.AddAsync(fridgeInventory);
 
             var createdFridgeInventoryDto = _mapper.Map<FridgeInventoryDto>(fridgeInventory);
@@ -93,8 +142,17 @@ namespace Controllers
                 return NotFound($"Fridge with ID {fridgeInventoryDto.FridgeId} not found.");
             }
 
-            _mapper.Map(fridgeInventoryDto, existingFridgeInventory);
+            var role = GetUserRole();
+            if (role != "SuperAdmin")
+            {
+                var companyId = GetCompanyIdFromClaims();
+                if (companyId == null) return Forbid("Invalid or missing CompanyId");
 
+                if (existingFridgeInventory.Fridge.CompanyId != companyId || fridge.CompanyId != companyId)
+                    return Forbid("Access denied.");
+            }
+
+            _mapper.Map(fridgeInventoryDto, existingFridgeInventory);
             await _fridgeInventoryRepository.UpdateAsync(existingFridgeInventory);
 
             var updatedFridgeInventoryDto = _mapper.Map<FridgeInventoryDto>(existingFridgeInventory);
@@ -108,6 +166,16 @@ namespace Controllers
             if (fridgeInventory == null)
             {
                 return NotFound();
+            }
+
+            var role = GetUserRole();
+            if (role != "SuperAdmin")
+            {
+                var companyId = GetCompanyIdFromClaims();
+                if (companyId == null) return Forbid("Invalid or missing CompanyId");
+
+                if (fridgeInventory.Fridge.CompanyId != companyId)
+                    return Forbid("Access denied.");
             }
 
             await _fridgeInventoryRepository.DeleteAsync(id);

@@ -7,9 +7,9 @@ using Models.DTO;
 using Repositories;
 using System.Collections.Concurrent;
 
-namespace SmartLunch.Controllers
+namespace Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "SuperAdmin,Admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class DeviceController : ControllerBase
@@ -32,36 +32,48 @@ namespace SmartLunch.Controllers
             _orderRepository = orderRepository;
         }
 
+        private async Task<bool> IsAuthorizedFridge(Guid fridgeId)
+        {
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+
+            if (role == "SuperAdmin")
+                return true;
+
+            var companyIdClaim = User.Claims.FirstOrDefault(c => c.Type == "CompanyId")?.Value;
+            if (string.IsNullOrEmpty(companyIdClaim) || !Guid.TryParse(companyIdClaim, out var companyId))
+                return false;
+
+            var fridge = await _fridgeRepository.GetByIdAsync(fridgeId);
+            return fridge != null && fridge.CompanyId == companyId;
+        }
+
         [HttpGet("fridge/{fridgeId}")]
         public async Task<IActionResult> GetFridgeStatus(Guid fridgeId)
         {
-            var fridge = await _fridgeRepository.GetByIdAsync(fridgeId);
+            if (!await IsAuthorizedFridge(fridgeId))
+                return Forbid("Access denied. Fridge does not belong to your company.");
 
+            var fridge = await _fridgeRepository.GetByIdAsync(fridgeId);
             if (fridge == null)
-            {
                 return NotFound(new { message = "Fridge not found" });
-            }
 
             var fridgeDto = _mapper.Map<FridgeDto>(fridge);
-
             return Ok(fridgeDto);
         }
 
         [HttpPost("fridge/{fridgeId}/door-status")]
         public async Task<IActionResult> UpdateFridgeDoorStatus(Guid fridgeId, [FromBody] DoorStatusDto doorStatusDto)
         {
-            var fridge = await _fridgeRepository.GetByIdAsync(fridgeId);
+            if (!await IsAuthorizedFridge(fridgeId))
+                return Forbid("Access denied. Fridge does not belong to your company.");
 
+            var fridge = await _fridgeRepository.GetByIdAsync(fridgeId);
             if (fridge == null)
-            {
                 return NotFound(new { message = "Fridge not found" });
-            }
 
             var order = await _orderRepository.GetByIdAsync(doorStatusDto.OrderId);
             if (order == null)
-            {
                 return NotFound(new { message = "Order not found" });
-            }
 
             if (order.PaymentStatus != PaymentStatus.Completed)
             {
@@ -75,7 +87,6 @@ namespace SmartLunch.Controllers
 
                 await _notificationRepository.AddAsync(notification);
                 var notificationDto = _mapper.Map<NotificationDto>(notification);
-
                 return BadRequest(notificationDto);
             }
 
@@ -98,12 +109,12 @@ namespace SmartLunch.Controllers
         [HttpPost("fridge/{fridgeId}/status")]
         public async Task<IActionResult> UpdateFridgeStatus(Guid fridgeId, [FromBody] FridgeStatusDto fridgeStatus)
         {
-            var fridge = await _fridgeRepository.GetByIdAsync(fridgeId);
+            if (!await IsAuthorizedFridge(fridgeId))
+                return Forbid("Access denied. Fridge does not belong to your company.");
 
+            var fridge = await _fridgeRepository.GetByIdAsync(fridgeId);
             if (fridge == null)
-            {
                 return NotFound(new { message = "Fridge not found" });
-            }
 
             if (fridgeStatus.CurrentTemperature < fridge.MinTemperature)
             {
@@ -135,6 +146,9 @@ namespace SmartLunch.Controllers
         [HttpPost("fridge/{fridgeId}/temperature-log")]
         public async Task<IActionResult> AddTemperatureLog(Guid fridgeId, [FromBody] TemperatureLogDto logDto)
         {
+            if (!await IsAuthorizedFridge(fridgeId))
+                return Forbid("Access denied. Fridge does not belong to your company.");
+
             var log = new TemperatureLogDto
             {
                 Id = Guid.NewGuid(),

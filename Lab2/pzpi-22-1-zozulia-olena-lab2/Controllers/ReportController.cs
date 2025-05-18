@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "SuperAdmin,Admin,Contractor")]
     [ApiController]
     [Route("api/[controller]")]
     public class ReportController : ControllerBase
@@ -22,14 +22,41 @@ namespace Controllers
             _context = context;
         }
 
+        private string GetUserRole() =>
+            User.FindFirst(ClaimTypes.Role)?.Value;
+
+        private Guid? GetCompanyIdFromClaims()
+        {
+            var companyIdStr = User.FindFirst("CompanyId")?.Value;
+            return Guid.TryParse(companyIdStr, out var id) ? id : null;
+        }
+
         [HttpGet("fridges-summary")]
         public async Task<IActionResult> GetFridgesSummary()
         {
-            var companies = await _context.Companies
-                .Include(c => c.Fridges)
-                .ThenInclude(f => f.FridgeInventories)
-                .ThenInclude(fi => fi.FoodItem)
-                .ToListAsync();
+            List<Company> companies;
+
+            var role = GetUserRole();
+            if (role == "SuperAdmin")
+            {
+                companies = await _context.Companies
+                    .Include(c => c.Fridges)
+                        .ThenInclude(f => f.FridgeInventories)
+                        .ThenInclude(fi => fi.FoodItem)
+                    .ToListAsync();
+            }
+            else
+            {
+                var companyId = GetCompanyIdFromClaims();
+                if (companyId == null) return Forbid("Invalid or missing CompanyId");
+
+                companies = await _context.Companies
+                    .Where(c => c.Id == companyId)
+                    .Include(c => c.Fridges)
+                        .ThenInclude(f => f.FridgeInventories)
+                        .ThenInclude(fi => fi.FoodItem)
+                    .ToListAsync();
+            }
 
             var memoryStream = new MemoryStream();
             var writer = new PdfWriter(memoryStream);
@@ -56,21 +83,33 @@ namespace Controllers
                         document.Add(new Paragraph($"      Product: {inventory.FoodItem.Name}, Quantity: {inventory.Quantity}"));
                     }
                 }
+
                 document.Add(new Paragraph("\n"));
             }
 
             document.Close();
-            var fileContents = memoryStream.ToArray();
-            memoryStream.Dispose();
-            return File(fileContents, "application/pdf", "FridgesSummary.pdf");
+            return File(memoryStream.ToArray(), "application/pdf", "FridgesSummary.pdf");
         }
 
         [HttpGet("popular-products")]
         public async Task<IActionResult> GetPopularProducts()
         {
-            var popularProducts = await _context.OrderItems
+            var role = GetUserRole();
+            IQueryable<OrderItem> query = _context.OrderItems
                 .Include(oi => oi.FridgeInventory)
-                .ThenInclude(fi => fi.FoodItem)
+                    .ThenInclude(fi => fi.FoodItem)
+                .Include(oi => oi.FridgeInventory)
+                    .ThenInclude(fi => fi.Fridge);
+
+            if (role != "SuperAdmin")
+            {
+                var companyId = GetCompanyIdFromClaims();
+                if (companyId == null) return Forbid("Invalid or missing CompanyId");
+
+                query = query.Where(oi => oi.FridgeInventory.Fridge.CompanyId == companyId);
+            }
+
+            var popularProducts = await query
                 .GroupBy(oi => oi.FridgeInventory.FoodItem.Name)
                 .Select(group => new
                 {
@@ -96,9 +135,7 @@ namespace Controllers
             }
 
             document.Close();
-            var fileContents = memoryStream.ToArray();
-            memoryStream.Dispose();
-            return File(fileContents, "application/pdf", "PopularProducts.pdf");
+            return File(memoryStream.ToArray(), "application/pdf", "PopularProducts.pdf");
         }
     }
 }

@@ -5,7 +5,7 @@ using System.Security.Claims;
 
 namespace Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "SuperAdmin")]
     [ApiController]
     [Route("api/[controller]")]
     public class BackupController : ControllerBase
@@ -20,13 +20,6 @@ namespace Controllers
         [HttpGet("create-backup")]
         public async Task<IActionResult> CreateBackup([FromQuery] string folderPath)
         {
-            var email = User.FindFirst(ClaimTypes.Email)?.Value;
-
-            if (email != "adminsmartlunch@gmail.com")
-            {
-                return BadRequest("You do not have permission to create backups.");
-            }
-
             if (string.IsNullOrEmpty(folderPath))
             {
                 return BadRequest("Error! Folder path is not provided.");
@@ -67,13 +60,6 @@ namespace Controllers
         [HttpPost("restore-database")]
         public async Task<IActionResult> RestoreFromBackup([FromQuery] string folderPath, IFormFile backupFile)
         {
-            var email = User.FindFirst(ClaimTypes.Email)?.Value;
-
-            if (email != "adminsmartlunch@gmail.com")
-            {
-                return BadRequest("You do not have permission to restore the database.");
-            }
-
             if (backupFile == null || backupFile.Length == 0)
             {
                 return BadRequest("Error! Backup file is not provided or empty.");
