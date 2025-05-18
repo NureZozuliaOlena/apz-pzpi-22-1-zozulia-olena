@@ -4,6 +4,7 @@
     {
         Admin,
         Contractor,
-        Employee
+        Employee,
+        SuperAdmin
     }
 }
