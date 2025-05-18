@@ -16,7 +16,7 @@ namespace Service
 
         public async Task SeedAdminAsync()
         {
-            if (_context.Users.Any(u => u.Email == "adminsmartlunch@gmail.com"))
+            if (_context.Users.Any(u => u.Email == "superadmin@gmail.com"))
             {
                 return;
             }
@@ -28,8 +28,8 @@ namespace Service
                 LastName = "Admin",
                 DateOfBirth = new DateTime(2005, 1, 13),
                 PhoneNumber = "1234567890",
-                Email = "adminsmartlunch@gmail.com",
-                Role = UserRole.Admin
+                Email = "superadmin@gmail.com",
+                Role = UserRole.SuperAdmin
             };
 
             var passwordHash = PasswordHelper.HashPassword("Password123!");
