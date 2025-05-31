@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 import {
   COMPANIES_ROUTE, FOODITEMS_ROUTE, FRIDGEINVENTORY_ROUTE, FRIDGES_ROUTE,
   LOGIN_ROUTE, MAIN_ROUTE, NOTIFICATIONS_ROUTE, ORDERITEMS_ROUTE,
-  ORDERS_ROUTE, USERS_ROUTE, REPORTS_ROUTE, BACKUP_ROUTE, REGISTER_ROUTE
+  ORDERS_ROUTE, USERS_ROUTE, REPORTS_ROUTE, BACKUP_ROUTE, REGISTER_ROUTE, CHART_ROUTE
 } from "../../consts";
 import { Context } from "../..";
 import { observer } from "mobx-react-lite";
@@ -32,6 +32,7 @@ const authLinks: ILink[] = [
   { link: USERS_ROUTE, text: "users.title", roles: ["SuperAdmin", "Admin"] },
   { link: REPORTS_ROUTE, text: "reports.title", roles: ["SuperAdmin", "Admin", "Contractor"] },
   { link: BACKUP_ROUTE, text: "backup.title", roles: ["SuperAdmin"] },
+  { link: CHART_ROUTE, text: "charts.title", roles: ["SuperAdmin", "Admin", "Contractor"] },
 ];
 
 const notAuthLinks: ILink[] = [

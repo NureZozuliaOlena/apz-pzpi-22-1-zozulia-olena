@@ -21,3 +21,8 @@ export const deleteFridge = async (id: string) => {
     const { data } = await $authhost.delete(`api/Fridge/${id}`)
     return data;
 }
+
+export const getTemperatureLogs = async (fridgeId: string): Promise<TemperatureLog[]> => {
+    const { data } = await $authhost.get(`/api/device/fridge/${fridgeId}/temperature-logs`);
+    return data;
+};

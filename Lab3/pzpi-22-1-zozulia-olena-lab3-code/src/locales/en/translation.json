@@ -319,5 +319,16 @@
     "contractor": "Contractor",
     "employee": "Employee",
     "superAdmin": "Super Admin"
-  }
+  },
+  "charts": {
+  "title": "Charts",
+  "monitoring": "Temperature Monitoring",
+  "fridgeLabel": "Fridge",
+  "selectFridge": "Select a fridge",
+  "noData": "No data available",
+  "errorLoadingData": "Failed to load temperature data",
+  "errorLoadingFridges": "Failed to load fridges",
+  "time": "Time",
+  "temperatureAxis": "Temperature (°C)"
+}
 }

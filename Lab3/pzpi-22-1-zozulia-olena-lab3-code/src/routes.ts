@@ -1,5 +1,5 @@
 import { ComponentType } from "react";
-import { COMPANIES_ROUTE, FOODITEMS_ROUTE, FRIDGEINVENTORY_ROUTE, FRIDGES_ROUTE, LOGIN_ROUTE, MAIN_ROUTE, NOTIFICATIONS_ROUTE, ORDERITEMS_ROUTE, ORDERS_ROUTE, USERS_ROUTE, REPORTS_ROUTE, BACKUP_ROUTE, REGISTER_ROUTE } from "./consts";
+import { COMPANIES_ROUTE, FOODITEMS_ROUTE, FRIDGEINVENTORY_ROUTE, FRIDGES_ROUTE, LOGIN_ROUTE, MAIN_ROUTE, NOTIFICATIONS_ROUTE, ORDERITEMS_ROUTE, ORDERS_ROUTE, USERS_ROUTE, REPORTS_ROUTE, BACKUP_ROUTE, REGISTER_ROUTE, CHART_ROUTE } from "./consts";
 import { Companies } from "./pages/Companies";
 import { MainPage } from "./pages/MainPage";
 import { Login } from "./pages/Login";
@@ -13,6 +13,7 @@ import { Orderitems } from "./pages/OrderItems";
 import ReportsPage from "./pages/ReportsPage";
 import BackupPage from "./pages/BackupPage";
 import { Register } from "./pages/Register";
+import TemperatureChart from "./pages/TemperatureChart"; 
 
 interface RouteData {
     path: string,
@@ -32,5 +33,6 @@ export const applicationRoutes: RouteData[] = [
     { path: ORDERITEMS_ROUTE, Component: Orderitems },
     { path: REPORTS_ROUTE, Component: ReportsPage },
     { path: BACKUP_ROUTE, Component: BackupPage },
-    { path: REGISTER_ROUTE, Component: Register }
+    { path: REGISTER_ROUTE, Component: Register },
+    { path: CHART_ROUTE, Component: TemperatureChart },
 ]
