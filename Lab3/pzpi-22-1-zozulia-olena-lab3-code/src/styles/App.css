@@ -1,0 +1,247 @@
+* {
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+*,
+*:before,
+*:after {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+:focus,
+:active {
+  outline: none;
+}
+
+a:focus,
+a:active {
+  outline: none;
+}
+
+nav,
+footer,
+header,
+aside {
+  display: block;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  font-size: 100%;
+  line-height: 1;
+  font-size: 14px;
+  -ms-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
+input,
+button,
+textarea {
+  font-family: inherit;
+}
+
+input::-ms-clear {
+  display: none;
+}
+
+button {
+  cursor: pointer;
+}
+
+button::-moz-focus-inner {
+  padding: 0;
+  border: 0;
+}
+
+a,
+a:visited {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+ul li {
+  list-style: none;
+}
+
+img {
+  vertical-align: top;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 400;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+textarea {
+  resize: none;
+}
+
+/* ===== Scrollbar CSS ===== */
+/* Firefox */
+* {
+  scrollbar-width: none;
+  scrollbar-color: #e0e0e0 #ffffff;
+}
+
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #ffffff;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  border: 3px solid #ffffff;
+}
+
+/* Header styles */
+.header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  padding: 10px 0;
+  width: 100%;
+}
+
+.container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  font-size: 24px;
+  font-weight: bold;
+  text-decoration: none;
+  color: #333;
+  white-space: nowrap;
+}
+
+.nav {
+  display: flex;
+  flex-grow: 1;
+  justify-content: flex-end;
+  overflow: hidden;
+}
+
+.nav-list {
+  display: flex;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.nav-item {
+  margin-left: 15px;
+  white-space: nowrap;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #007bff;
+  font-size: 16px;
+}
+
+.nav-link-active {
+  font-weight: bold;
+  color: #0056b3;
+}
+
+.logout-button {
+  background-color: #6c757d;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.page-container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px;
+  max-width: 1140px;
+}
+
+.language-switcher {
+  display: flex;
+  margin-left: 15px;
+}
+
+.language-button {
+  background: none;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+  padding: 0 5px;
+  font-size: 16px;
+  white-space: nowrap;
+}
+
+.language-button:hover {
+  text-decoration: underline;
+}
+
+.language-button.active {
+  font-weight: bold;
+  color: #0056b3;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .nav {
+    width: 100%;
+    margin-top: 10px;
+    justify-content: flex-start;
+  }
+  
+  .nav-list {
+    justify-content: flex-start;
+  }
+  
+  .nav-item {
+    margin-left: 0;
+    margin-right: 15px;
+    margin-bottom: 5px;
+  }
+  
+  .language-switcher {
+    margin-left: 0;
+    margin-top: 10px;
+  }
+}

@@ -1,0 +1,302 @@
+{
+  "backup": {
+    "title": "Backup & Restore",
+    "createBackup": "Create Backup",
+    "backupName": "Backup Name",
+    "create": "Create",
+    "restoreDb": "Restore Database",
+    "restoreTarget": "Restore Target",
+    "chooseFile": "Choose File for Restore",
+    "restore": "Restore",
+    "fileRequired": "Please select a file!"
+  },
+  "companies": {
+    "title": "Companies",
+    "createNew": "Create New",
+    "tableHeaders": {
+      "id": "ID",
+      "name": "Name",
+      "address": "Address",
+      "admin": "Admin",
+      "actions": "Actions"
+    },
+    "edit": "Edit",
+    "delete": "Delete",
+    "error": "Error",
+    "createModal": {
+      "title": "Create Company",
+      "name": "Name",
+      "address": "Address",
+      "contactEmail": "Contact Email",
+      "save": "Save",
+      "close": "Close",
+      "nameRequired": "Enter name",
+      "addressRequired": "Enter address",
+      "emailRequired": "Enter email"
+    },
+    "editModal": {
+      "title": "Edit Company",
+      "name": "Name",
+      "address": "Address",
+      "contactEmail": "Contact Email",
+      "save": "Save",
+      "close": "Close",
+      "nameRequired": "Enter name",
+      "addressRequired": "Enter address",
+      "emailRequired": "Enter email"
+    }
+  },
+  "foodItems": {
+    "title": "Food Items",
+    "createNew": "Create New",
+    "tableHeaders": {
+      "id": "ID",
+      "name": "Name",
+      "description": "Description",
+      "price": "Price",
+      "isAvailable": "Availability",
+      "actions": "Actions"
+    },
+    "edit": "Edit",
+    "delete": "Delete",
+    "error": "Error",
+    "available": "+",
+    "notAvailable": "-",
+    "editModal": {
+      "title": "Edit Product",
+      "name": "Name",
+      "description": "Description",
+      "price": "Price",
+      "isAvailable": "Available",
+      "isAvailableYes": "Yes",
+      "isAvailableNo": "No",
+      "close": "Close",
+      "save": "Save",
+      "nameRequired": "Please enter the product name",
+      "descriptionRequired": "Please enter the product description",
+      "priceMin": "Minimum price is 0"
+    },
+    "createModal": {
+      "title": "Create Product",
+      "name": "Name",
+      "description": "Description",
+      "price": "Price",
+      "isAvailable": "Available",
+      "isAvailableYes": "Yes",
+      "isAvailableNo": "No",
+      "close": "Close",
+      "save": "Save",
+      "nameRequired": "Please enter the product name",
+      "descriptionRequired": "Please enter the product description",
+      "priceMin": "Minimum price is 0"
+    }
+  },
+  "fridgeInventories": {
+    "title": "Fridge Inventories",
+    "createNew": "Create New",
+    "tableHeaders": {
+      "id": "ID",
+      "fridgeId": "Fridge ID",
+      "foodItemId": "Food Item ID",
+      "quantity": "Quantity",
+      "actions": "Actions"
+    },
+    "edit": "Edit",
+    "delete": "Delete",
+    "error": "Error",
+    "createModal": {
+      "title": "Edit Inventory",
+      "fridge": "Fridge",
+      "selectFridge": "Select fridge...",
+      "foodItem": "Food Item",
+      "selectFoodItem": "Select food item...",
+      "quantity": "Quantity",
+      "quantityRequired": "Enter quantity",
+      "quantityMin": "Minimum quantity is 0",
+      "save": "Save",
+      "close": "Close"
+    },
+    "editModal": {
+      "title": "Edit Inventory"
+    }
+  },
+  "fridges": {
+    "title": "Fridges",
+    "createNew": "Create New",
+    "tableHeaders": {
+      "id": "ID",
+      "company": "Company",
+      "minTemperature": "Min. Temperature",
+      "minInventoryLevel": "Min. Inventory Level",
+      "lastRestocked": "Last Restocked",
+      "actions": "Actions"
+    },
+    "edit": "Edit",
+    "delete": "Delete",
+    "error": "Error",
+    "createModal": {
+      "title": "Create Fridge",
+      "company": "Company",
+      "companyRequired": "Please select a company",
+      "selectCompany": "Select a company...",
+      "minInventory": "Min Inventory Level",
+      "minInventoryRequired": "Enter inventory level",
+      "minInventoryMin": "Minimum inventory is 0",
+      "minTemperature": "Min Temperature",
+      "minTemperatureRequired": "Enter temperature",
+      "minTemperatureMin": "Minimum temperature is -50",
+      "minTemperatureMax": "Maximum temperature is 50",
+      "lastRestocked": "Last Restocked",
+      "lastRestockedRequired": "Enter last restocked date",
+      "save": "Save",
+      "close": "Close"
+    },
+    "editModal": {
+      "title": "Edit Fridge"
+    }
+  },
+  "login": {
+    "title": "Login",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Login",
+    "emailRequired": "Email is required",
+    "passwordRequired": "Password is required"
+  },
+  "logout": "Logout",
+
+  "mainPage": {
+    "title": "SmartLunch System"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "tableHeaders": {
+      "id": "ID",
+      "title": "Title",
+      "text": "Text",
+      "dateTimeCreated": "Date Created",
+      "userEmail": "User Email",
+      "fridgeId": "Fridge ID"
+    },
+    "error": "Error"
+  },
+  "orderItems": {
+    "title": "Order Items",
+    "createNew": "Create New",
+    "tableHeaders": {
+      "id": "ID",
+      "orderId": "Order ID",
+      "fridgeInventoryId": "Fridge Inventory ID",
+      "quantity": "Quantity",
+      "price": "Price",
+      "actions": "Actions"
+    },
+    "edit": "Edit",
+    "delete": "Delete",
+    "error": "Error",
+    "createModal": {
+      "title": "Create Order Item",
+      "quantity": "Quantity",
+      "price": "Price",
+      "order": "Order",
+      "fridgeInventory": "Fridge Inventory",
+      "selectOrder": "Select order...",
+      "selectFridgeInventory": "Select fridge inventory...",
+      "submit": "Save",
+      "close": "Close",
+      "validation": {
+        "quantity": "Enter quantity",
+        "price": "Enter price",
+        "order": "Select order",
+        "fridgeInventory": "Select fridge inventory"
+      }
+    },
+    "editModal": {
+      "title": "Edit Order Item"
+    }
+  },
+  "orders": {
+    "title": "Orders",
+    "createNew": "Create New",
+    "tableHeaders": {
+      "id": "ID",
+      "userEmail": "User Email",
+      "fridgeId": "Fridge ID",
+      "totalAmount": "Total Amount",
+      "paymentStatus": "Payment Status",
+      "timestamp": "Timestamp",
+      "actions": "Actions"
+    },
+    "edit": "Edit",
+    "delete": "Delete",
+    "error": "Error",
+    "createModal": {
+      "title": "Create Order",
+      "userEmail": "User Email",
+      "fridgeId": "Fridge ID",
+      "totalAmount": "Total Amount",
+      "paymentStatus": "Payment Status",
+      "timestamp": "Timestamp",
+      "selectUser": "Select user...",
+      "selectFridge": "Select fridge...",
+      "save": "Save",
+      "close": "Close",
+      "userRequired": "Select user",
+      "fridgeRequired": "Select fridge",
+      "amountRequired": "Enter total amount"
+    },
+    "editModal": {
+      "title": "Edit Order"
+    }
+  },
+  "reports": {
+    "title": "Reports",
+    "fridgesSummary": "Fridges Summary",
+    "popularProducts": "Popular Products"
+  },
+  "users": {
+    "title": "Users",
+    "createNew": "Create New",
+    "tableHeaders": {
+      "id": "ID",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "dateOfBirth": "Date of Birth",
+      "phoneNumber": "Phone Number",
+      "email": "Email",
+      "passwordHash": "Password",
+      "role": "Role",
+      "companyId": "Company ID",
+      "actions": "Actions"
+    },
+    "edit": "Edit",
+    "delete": "Delete",
+    "error": "Error",
+    "createModal": {
+      "title": "Create User",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "dateOfBirth": "Date of Birth",
+      "phoneNumber": "Phone Number",
+      "email": "Email",
+            "passwordHash": "Password",
+      "role": "Role",
+      "companyId": "Company ID",
+      "selectCompany": "Select company...",
+      "save": "Save",
+      "close": "Close",
+      "firstNameRequired": "Enter first name",
+      "lastNameRequired": "Enter last name",
+      "emailRequired": "Enter email"
+    },
+    "editModal": {
+      "title": "Edit User"
+    }
+  },
+  "roles": {
+    "admin": "Admin",
+    "contractor": "Contractor",
+    "employee": "Employee",
+    "superAdmin": "Super Admin"
+  }
+}

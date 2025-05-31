@@ -1,0 +1,89 @@
+.header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  padding: 10px 0;
+}
+
+.container {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* бренд слева, меню справа */
+  box-sizing: border-box;
+}
+
+
+.brand {
+  font-size: 24px;
+  font-weight: bold;
+  text-decoration: none;
+  color: #333;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+}
+
+.nav-list {
+  display: flex;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+}
+
+.nav-item {
+  margin-left: 15px;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #007bff;
+  font-size: 16px;
+}
+
+.nav-link-active {
+  font-weight: bold;
+  color: #0056b3;
+}
+
+.logout-button {
+  background-color: #6c757d;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.page-container {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.language-switcher {
+  display: flex;
+  margin-left: 15px;
+}
+
+.language-button {
+  background: none;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+  padding: 0 5px;
+  font-size: 16px;
+}
+
+.language-button:hover {
+  text-decoration: underline;
+}
+
+.language-button.active {
+  font-weight: bold;
+  color: #0056b3;
+}

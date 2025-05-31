@@ -1,0 +1,282 @@
+{
+  "backup": {
+    "title": "Резервне копіювання та відновлення",
+    "createBackup": "Створити резервну копію",
+    "backupName": "Назва копії",
+    "create": "Створити",
+    "restoreDb": "Відновити базу даних",
+    "restoreTarget": "Ціль відновлення",
+    "chooseFile": "Оберіть файл для відновлення",
+    "restore": "Відновити",
+    "fileRequired": "Будь ласка, виберіть файл!"
+  },
+  "companies": {
+    "title": "Компанії",
+    "createNew": "Створити нову",
+    "tableHeaders": {
+      "id": "ID",
+      "name": "Назва",
+      "address": "Адреса",
+      "admin": "Адміністратор",
+      "actions": "Дії"
+    },
+    "edit": "Редагувати",
+    "delete": "Видалити",
+    "error": "Помилка",
+    "createModal": {
+      "title": "Створити компанію",
+      "name": "Назва",
+      "address": "Адреса",
+      "contactEmail": "Контактна електронна пошта",
+      "save": "Зберегти",
+      "close": "Закрити",
+      "nameRequired": "Введіть назву",
+      "addressRequired": "Введіть адресу",
+      "emailRequired": "Введіть електронну пошту"
+    },
+    "editModal": {
+      "title": "Редагувати компанію"
+    }
+  },
+  "foodItems": {
+    "title": "Продукти харчування",
+    "createNew": "Створити новий",
+    "tableHeaders": {
+      "id": "ID",
+      "name": "Назва",
+      "description": "Опис",
+      "price": "Ціна",
+      "isAvailable": "Доступність",
+      "actions": "Дії"
+    },
+    "edit": "Редагувати",
+    "delete": "Видалити",
+    "error": "Помилка",
+    "available": "+",
+    "notAvailable": "-",
+    "editModal": {
+  "title": "Редагувати продукт"
+},
+"createModal": {
+  "title": "Створити продукт",
+  "name": "Назва",
+  "description": "Опис",
+  "price": "Ціна",
+  "isAvailable": "Доступний",
+  "isAvailableYes": "Так",
+  "isAvailableNo": "Ні",
+  "close": "Закрити",
+  "save": "Зберегти",
+  "nameRequired": "Введіть назву продукту",
+  "descriptionRequired": "Введіть опис продукту",
+  "priceMin": "Мінімальна ціна — 0"
+}
+
+  },
+  "fridgeInventories": {
+  "title": "Інвентар холодильників",
+  "createNew": "Створити новий",
+  "tableHeaders": {
+    "id": "ID",
+    "fridgeId": "ID холодильника",
+    "foodItemId": "ID продукту",
+    "quantity": "Кількість",
+    "actions": "Дії"
+  },
+  "edit": "Редагувати",
+  "delete": "Видалити",
+  "error": "Помилка",
+  "createModal": {
+    "title": "Редагувати інвентар",
+    "fridge": "Холодильник",
+    "selectFridge": "Оберіть холодильник...",
+    "foodItem": "Продукт",
+    "selectFoodItem": "Оберіть продукт...",
+    "quantity": "Кількість",
+    "quantityRequired": "Введіть кількість",
+    "quantityMin": "Мінімальна кількість — 0",
+    "save": "Зберегти",
+    "close": "Закрити"
+  },
+  "editModal": {
+    "title": "Редагувати інвентар"
+  }
+},
+  
+  "fridges": {
+  "title": "Холодильники",
+  "createNew": "Створити новий",
+  "tableHeaders": {
+    "id": "ID",
+    "company": "Компанія",
+    "minTemperature": "Мін. температура",
+    "minInventoryLevel": "Мін. рівень запасів",
+    "lastRestocked": "Останнє поповнення",
+    "actions": "Дії"
+  },
+  "edit": "Редагувати",
+  "delete": "Видалити",
+  "error": "Помилка",
+  "createModal": {
+    "title": "Створити холодильник",
+    "company": "Компанія",
+    "companyRequired": "Будь ласка, виберіть компанію",
+    "selectCompany": "Оберіть компанію...",
+    "minInventory": "Мінімальний рівень запасів",
+    "minInventoryRequired": "Введіть рівень запасів",
+    "minInventoryMin": "Мінімальний рівень запасів — 0",
+    "minTemperature": "Мінімальна температура",
+    "minTemperatureRequired": "Введіть температуру",
+    "minTemperatureMin": "Мінімальна температура — -50",
+    "minTemperatureMax": "Максимальна температура — 50",
+    "lastRestocked": "Останнє поповнення",
+    "lastRestockedRequired": "Введіть дату останнього поповнення",
+    "save": "Зберегти",
+    "close": "Закрити"
+  },
+  "editModal": {
+    "title": "Редагувати холодильник"
+  }
+},
+  "login": {
+    "title": "Вхід",
+    "email": "Електронна пошта",
+    "password": "Пароль",
+    "submit": "Увійти",
+    "emailRequired": "Електронна пошта обов’язкова",
+    "passwordRequired": "Пароль обов’язковий"
+  },
+  "logout": "Вихід",
+
+  "notifications": {
+    "title": "Сповіщення",
+    "tableHeaders": {
+      "id": "ID",
+      "title": "Заголовок",
+      "text": "Текст",
+      "dateTimeCreated": "Дата створення",
+      "userEmail": "Електронна пошта користувача",
+      "fridgeId": "ID холодильника"
+    },
+    "error": "Помилка"
+  },
+  "orderItems": {
+    "title": "Елементи замовлення",
+    "createNew": "Створити новий",
+    "tableHeaders": {
+      "id": "ID",
+      "orderId": "ID замовлення",
+      "fridgeInventoryId": "ID інвентарю холодильника",
+      "quantity": "Кількість",
+      "price": "Ціна",
+      "actions": "Дії"
+    },
+    "edit": "Редагувати",
+    "delete": "Видалити",
+    "error": "Помилка",
+    "createModal": {
+    "title": "Створити елемент замовлення",
+    "quantity": "Кількість",
+    "price": "Ціна",
+    "order": "Замовлення",
+    "fridgeInventory": "Інвентар холодильника",
+    "selectOrder": "Виберіть замовлення...",
+    "selectFridgeInventory": "Виберіть інвентар...",
+    "submit": "Зберегти",
+    "close": "Закрити",
+    "validation": {
+      "quantity": "Введіть кількість",
+      "price": "Введіть ціну",
+      "order": "Виберіть замовлення",
+      "fridgeInventory": "Виберіть інвентар"
+    }
+  },
+    "editModal": {
+      "title": "Редагувати елемент замовлення"
+    }
+  },
+  "orders": {
+    "title": "Замовлення",
+    "createNew": "Створити нове",
+    "tableHeaders": {
+      "id": "ID",
+      "userEmail": "Електронна пошта користувача",
+      "fridgeId": "ID холодильника",
+      "totalAmount": "Загальна сума",
+      "paymentStatus": "Статус оплати",
+      "timestamp": "Часова позначка",
+      "actions": "Дії"
+    },
+    "edit": "Редагувати",
+    "delete": "Видалити",
+    "error": "Помилка",
+    "createModal": {
+      "title": "Створити замовлення",
+      "userEmail": "Електронна пошта користувача",
+      "fridgeId": "ID холодильника",
+      "totalAmount": "Загальна сума",
+      "paymentStatus": "Статус оплати",
+      "timestamp": "Часова позначка",
+      "selectUser": "Оберіть користувача...",
+      "selectFridge": "Оберіть холодильник...",
+      "save": "Зберегти",
+      "close": "Закрити",
+      "userRequired": "Виберіть користувача",
+      "fridgeRequired": "Виберіть холодильник",
+      "amountRequired": "Введіть загальну суму"
+    },
+    "editModal": {
+      "title": "Редагувати замовлення"
+    }
+  },
+  "reports": {
+    "title": "Звіти",
+    "fridgesSummary": "Зведення по холодильниках",
+    "popularProducts": "Популярні продукти"
+  },
+  "users": {
+    "title": "Користувачі",
+    "createNew": "Створити нового",
+    "tableHeaders": {
+      "id": "ID",
+      "firstName": "Ім’я",
+      "lastName": "Прізвище",
+      "dateOfBirth": "Дата народження",
+      "phoneNumber": "Номер телефону",
+      "email": "Електронна пошта",
+      "passwordHash": "Пароль",
+      "role": "Роль",
+      "companyId": "ID компанії",
+      "actions": "Дії"
+    },
+    "edit": "Редагувати",
+    "delete": "Видалити",
+    "error": "Помилка",
+    "createModal": {
+      "title": "Створити користувача",
+      "firstName": "Ім’я",
+      "lastName": "Прізвище",
+      "dateOfBirth": "Дата народження",
+      "phoneNumber": "Номер телефону",
+      "email": "Електронна пошта",
+            "passwordHash": "Пароль",
+      "role": "Роль",
+      "companyId": "ID компанії",
+      "selectCompany": "Оберіть компанію...",
+      "save": "Зберегти",
+      "close": "Закрити",
+      "firstNameRequired": "Введіть ім’я",
+      "lastNameRequired": "Введіть прізвище",
+      "emailRequired": "Введіть електронну пошту"
+    },
+    "editModal": {
+      "title": "Редагувати користувача"
+    }
+  },
+  "roles": {
+  "admin": "Адмін",
+  "contractor": "Підрядник",
+  "employee": "Працівник",
+  "superAdmin": "Суперадмін"
+}
+}
