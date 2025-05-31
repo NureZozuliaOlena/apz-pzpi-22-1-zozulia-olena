@@ -1,5 +1,5 @@
 import { ComponentType } from "react";
-import { COMPANIES_ROUTE, FOODITEMS_ROUTE, FRIDGEINVENTORY_ROUTE, FRIDGES_ROUTE, LOGIN_ROUTE, MAIN_ROUTE, NOTIFICATIONS_ROUTE, ORDERITEMS_ROUTE, ORDERS_ROUTE, USERS_ROUTE, REPORTS_ROUTE, BACKUP_ROUTE } from "./consts";
+import { COMPANIES_ROUTE, FOODITEMS_ROUTE, FRIDGEINVENTORY_ROUTE, FRIDGES_ROUTE, LOGIN_ROUTE, MAIN_ROUTE, NOTIFICATIONS_ROUTE, ORDERITEMS_ROUTE, ORDERS_ROUTE, USERS_ROUTE, REPORTS_ROUTE, BACKUP_ROUTE, REGISTER_ROUTE } from "./consts";
 import { Companies } from "./pages/Companies";
 import { MainPage } from "./pages/MainPage";
 import { Login } from "./pages/Login";
@@ -12,6 +12,7 @@ import { Orders } from "./pages/Orders";
 import { Orderitems } from "./pages/OrderItems";
 import ReportsPage from "./pages/ReportsPage";
 import BackupPage from "./pages/BackupPage";
+import { Register } from "./pages/Register";
 
 interface RouteData {
     path: string,
@@ -29,6 +30,7 @@ export const applicationRoutes: RouteData[] = [
     { path: NOTIFICATIONS_ROUTE, Component: Notifications },
     { path: ORDERS_ROUTE, Component: Orders },
     { path: ORDERITEMS_ROUTE, Component: Orderitems },
-    { path: REPORTS_ROUTE, Component: ReportsPage },      // ✅ додано
-    { path: BACKUP_ROUTE, Component: BackupPage } // ✅ додано, 
+    { path: REPORTS_ROUTE, Component: ReportsPage },
+    { path: BACKUP_ROUTE, Component: BackupPage },
+    { path: REGISTER_ROUTE, Component: Register }
 ]

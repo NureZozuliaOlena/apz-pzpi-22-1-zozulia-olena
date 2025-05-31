@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 import {
   COMPANIES_ROUTE, FOODITEMS_ROUTE, FRIDGEINVENTORY_ROUTE, FRIDGES_ROUTE,
   LOGIN_ROUTE, MAIN_ROUTE, NOTIFICATIONS_ROUTE, ORDERITEMS_ROUTE,
-  ORDERS_ROUTE, USERS_ROUTE, REPORTS_ROUTE, BACKUP_ROUTE
+  ORDERS_ROUTE, USERS_ROUTE, REPORTS_ROUTE, BACKUP_ROUTE, REGISTER_ROUTE
 } from "../../consts";
 import { Context } from "../..";
 import { observer } from "mobx-react-lite";
@@ -17,7 +17,7 @@ interface IProps {
 
 interface ILink {
   link: string;
-  text: string; // ключ для i18n
+  text: string;
   roles?: string[];
 }
 
@@ -36,6 +36,7 @@ const authLinks: ILink[] = [
 
 const notAuthLinks: ILink[] = [
   { link: LOGIN_ROUTE, text: "login.title" },
+  { link: REGISTER_ROUTE, text: "register.title" },
 ];
 
 export const Navbar = observer(({ children }: IProps) => {

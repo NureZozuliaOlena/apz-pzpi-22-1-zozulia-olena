@@ -1,6 +1,7 @@
 import { jwtDecode } from 'jwt-decode';
 import { $authhost, $host } from './index'
 import { ILoginViewModel } from '../interfaces/ILoginViewModel';
+import { IRegisterViewModel } from '../interfaces/IRegisterViewModel';
 
 export type ClaimName = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name" | "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
 export type UserClaims = {
@@ -12,6 +13,12 @@ export const login = async (loginData: ILoginViewModel) => {
     localStorage.setItem('token', data.token)
     return jwtDecode(data.token) as UserClaims;
 }
+
+export const register = async (user: IRegisterViewModel) => {
+    const { data } = await $host.post('api/Auth/register', user);
+    localStorage.setItem('token', data.token)
+    return jwtDecode(data.token) as UserClaims;
+};
 
 export const checkToken = async () => {
     const token = localStorage.getItem('token')
