@@ -1,1 +1,497 @@
+Міністерство освіти та науки України
+Харківський національний університет радіоелектроніки
+
+
+Кафедра програмної інженерії
+
+
+ЗВІТ
+до лабораторної роботи №3
+з дисципліни “Архітектура програмного забезпечення”
+
+
+Виконала ст. гр ПЗПІ-22-1
+Зозуля Олена Юріївна
+
+Перевірив
+ст. викладач кафедри ПІ
+Сокорчук Ігор Петрович
+
+
+
+
+Харків 2025
+1 ІСТОРІЯ ЗМІН
+№ДатаВерсія звітуОпис змін та виправлень121.05.20250.1Створення звіту231.05.20250.2Додано опис роботи і додатки301.06.20250.3Додано посилання на відеозапис
+2 ЗАВДАННЯ
+     Розробити клієнтську/front-end частину програмної системи.
+3 ОПИС ВИКОНАНОЇ РОБОТИ
+	Для розробки клієнтської частини застосунку використано бібліотеку React.js. Застосовано модульну архітектуру, яка базується на поділі за функціональністю: кожна папка або файл відповідає за окрему частину логіки (компоненти, сторінки, API-запити, управління станом, стилі тощо). Компоненти, утиліти, типи та функції для взаємодії з API розроблено з урахуванням повторного використання. 
+	Відеозапис роботи системи наведено в додатку А. ER-діаграму представлено в додатку Б на рисунку Б.1, структуру бази даних – на рисунку Б.2. UML-діаграму прецедентів зображено на рисунку Б.3, UML-діаграму компонентів – на рисунку Б.4, UML-діаграму діяльності – на рисунку Б.5, UML-діаграму станів – на рисунку Б.6.
+
+
+
+
+
+
+4 ВИСНОВКИ
+     У ході виконання лабораторної роботи я розробила клієнтську/front-end частину програмної системи.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ДОДАТОК А
+Відеозапис
+Відеозапис презентації результатів лабораторної роботи: https://youtu.be/v45T3_cDouc 
+Хронологічний опис відеозапису:
+
+00:00 – Вступ
+00:11 – Мета лабораторної роботи
+00:17 – Авторизація у системі як адміністратор системи
+00:31 – Взаємодія з даними
+01:59 – Авторизація у системі як звичайний працівник
+02:16 – Повторна авторизація у системі як адміністратора системи
+02:25 – Перегляд звітів по всіх компаніях
+02:50 – Резервне копіювання бази даних
+03:22 – Відновлення бази даних
+03:51 – Авторизація у системі як адміністратор компанії
+04:28 – Перегляд звітів по компанії
+04:44 – Перегляд графіку зміни температури
+05:25 – Повторна авторизація у системі як адміністратора системи
+05:37 – Зміна мови, одиниць виміру, формату дати та часу
+06:41 – Подяка за перегляд
+
+
+ДОДАТОК Б
+Графічні матеріали
+
+Рисунок Б.1 – ER-діаграма даних
+
+Рисунок Б.2 – Структура бази даних
+
+Рисунок Б.3 – UML-діаграма прецедентів
+
+
+Рисунок Б.4 – UML-діаграма компонентів
+
+
+Рисунок Б.5 – UML-діаграма діяльності
+
+Рисунок Б.6 – UML-діаграма станів
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ДОДАТОК В
+Програмний код
+     В.1 Математична обробка прикладних даних
+
+GitHub репозиторій: https://github.com/NureZozuliaOlena/apz-pzpi-22-1-zozulia-olena/blob/main/Lab3/pzpi-22-1-zozulia-olena-lab3-code/src/pages/TemperatureChart.tsx 
+  1 import React, { useEffect, useState } from 'react';
+  2 import axios from 'axios';
+  3 import {
+  4   LineChart, 
+  5   Line, 
+  6   XAxis,
+  7   YAxis,
+  8   CartesianGrid,
+  9   Tooltip,
+ 10   ResponsiveContainer,
+ 11 } from 'recharts';
+ 12 import { Box, CircularProgress, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material';
+ 13 import { useTranslation } from 'react-i18next';
+ 14
+ 15 interface TemperatureLog {
+ 16   id: string;
+ 17   fridgeId: string;
+ 18   timestamp: string;
+ 19   temperature: number;
+ 20 }
+ 21
+ 22 interface Fridge {
+ 23   id: string;
+ 24   name?: string;
+ 25   company?: {
+ 26     name: string;
+ 27   };
+ 28 }
+ 29
+ 30 interface FormattedTemperatureLog extends TemperatureLog {
+ 31   time: string;
+ 32   date: string;
+ 33 }
+ 34
+ 35 const api = axios.create({
+ 36   baseURL: 'http://localhost:5235/api/',
+ 37   headers: {
+ 38     'Authorization': `Bearer ${localStorage.getItem('token')}`,
+ 39     'Content-Type': 'application/json'
+ 40   }
+ 41 });
+ 42
+ 43 const fetchTemperatureLogs = async (fridgeId: string): Promise<TemperatureLog[]> => {
+ 44   const response = await api.get(`device/fridge/${fridgeId}/temperature-logs`);
+ 45   return response.data;
+ 46 };
+ 47
+ 48 const fetchFridges = async (): Promise<Fridge[]> => {
+ 49   const response = await api.get('Fridge');
+ 50   return response.data;
+ 51 };
+ 52
+ 53 const TemperatureChart: React.FC<{ fridgeId: string }> = ({ fridgeId }) => {
+ 54       const { t } = useTranslation();
+ 55   const [data, setData] = useState<FormattedTemperatureLog[]>([]);
+ 56   const [loading, setLoading] = useState(false);
+ 57   const [error, setError] = useState<string | null>(null);
+ 58
+ 59   useEffect(() => {
+ 60     if (!fridgeId) {
+ 61       setData([]);
+ 62       return;
+ 63     }
+ 64
+ 65     const loadData = async () => {
+ 66       setLoading(true);
+ 67       setError(null);
+ 68       try {
+ 69         const logs = await fetchTemperatureLogs(fridgeId);
+ 70         const formatted = logs.map(log => ({
+ 71           ...log,
+ 72           time: new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+ 73           date: new Date(log.timestamp).toLocaleDateString()
+ 74         }));
+ 75         setData(formatted);
+ 76       } catch (err) {
+ 77         setError('Failed to load temperature data');
+ 78         console.error('Failed to load temperature data:', err);
+ 79       } finally {
+ 80         setLoading(false);
+ 81       }
+ 82     };
+ 83
+ 84     loadData();
+ 85   }, [fridgeId]);
+ 86
+ 87   if (loading) return (
+ 88     <Box display="flex" justifyContent="center" alignItems="center" height={300}>
+ 89       <CircularProgress />
+ 90     </Box>
+ 91   );
+ 92
+ 93   if (error) return (
+ 94     <Box display="flex" justifyContent="center" alignItems="center" height={300}>
+ 95       <Typography color="error">{t('charts.errorLoadingData')}</Typography>
+ 96     </Box>
+ 97   );
+ 98
+ 99   if (!data.length) return (
+100     <Box display="flex" justifyContent="center" alignItems="center" height={300}>
+101       <Typography>{t('charts.noData')}</Typography>
+102     </Box>
+103   );
+104
+105   return (
+106     <ResponsiveContainer width="100%" height={400}>
+107       <LineChart
+108         data={data}
+109         margin={{ top: 20, right: 30, left: 20, bottom: 40 }}
+110       >
+111         <CartesianGrid strokeDasharray="3 3" />
+112         <XAxis
+113           dataKey="time"
+114           label={{ value: t('charts.time'), position: 'bottom', offset: 10 }}
+115         />
+116         <YAxis
+117           label={{ value: t('charts.temperatureAxis'), angle: -90, position: 'insideLeft' }}
+118         />
+119         <Tooltip
+120           formatter={(value: number) => [`${value} °C`, t('charts.temperatureAxis')]}
+121           labelFormatter={(label) => `${t('charts.time')}: ${label}`}
+122         />
+123         <Line
+124           type="monotone"
+125           dataKey="temperature"
+126           stroke="#8884d8"
+127           activeDot={{ r: 8 }}
+128           name={t('charts.temperature')}
+129         />
+130       </LineChart>
+131     </ResponsiveContainer>
+132   );
+133 };
+134
+135 const TemperatureMonitoringPage: React.FC = () => {
+136           const { t } = useTranslation();
+137   const [fridgeId, setFridgeId] = useState('');
+138   const [fridges, setFridges] = useState<Fridge[]>([]);
+139   const [loading, setLoading] = useState(false);
+140   const [error, setError] = useState<string | null>(null);
+141
+142   useEffect(() => {
+143     const loadFridges = async () => {
+144       setLoading(true);
+145       try {
+146         const data = await fetchFridges();
+147         setFridges(data);
+148       } catch (err) {
+149         setError('Failed to load fridges');
+150         console.error('Failed to load fridges:', err);
+151       } finally {
+152         setLoading(false);
+153       }
+154     };
+155
+156     loadFridges();
+157   }, []);
+158
+159   const handleChange = (event: SelectChangeEvent) => {
+160     setFridgeId(event.target.value);
+161   };
+162
+163   return (
+164     <Box sx={{ p: 3 }}>
+165       <Typography variant="h5" gutterBottom>
+166         {t('charts.monitoring')}
+167       </Typography>
+168
+169       <FormControl fullWidth sx={{ mb: 3 }} disabled={loading}>
+170         <InputLabel>{t('charts.fridgeLabel')}</InputLabel>
+171         <Select
+172           value={fridgeId}
+173           onChange={handleChange}
+174           label={t('charts.fridgeLabel')}
+175         >
+176           <MenuItem value="">
+177             <em>{t('charts.selectFridge')}</em>
+178           </MenuItem>
+179           {fridges.map(fridge => (
+180             <MenuItem key={fridge.id} value={fridge.id}>
+181               {fridge.company?.name || fridge.name || t('charts.fridgeLabel')} #{fridge.id}
+182             </MenuItem>
+183           ))}
+184         </Select>
+185       </FormControl>
+186
+187       <TemperatureChart fridgeId={fridgeId} />
+188     </Box>
+189   );
+190 };
+191
+192 export default TemperatureMonitoringPage;
+
+     В.2 Адміністрування бізнес-логіки системи
+
+GitHub репозиторій: https://github.com/NureZozuliaOlena/apz-pzpi-22-1-zozulia-olena/blob/main/Lab3/pzpi-22-1-zozulia-olena-lab3-code/src/pages/Users.tsx 
+  1 import React, { useEffect, useState } from 'react'
+  2 import { deleteUser, getUsers } from '../http/userApi'
+  3 import { IUser } from '../interfaces/IUser'
+  4 import { UserCreateModal } from '../components/Models/User/UserCreateModal'
+  5 import { UserEditModal } from '../components/Models/User/UserEditModal'
+  6 import styles from '../styles/Users.module.css'
+  7 import { useTranslation } from 'react-i18next'
+  8 import { formatDate } from '../utils/formatters';
+  9
+ 10 export const Users = () => {
+ 11   const { t } = useTranslation()
+ 12   const [users, setUsers] = useState<IUser[]>([])
+ 13   const [createModal, setCreateModal] = useState<boolean>(false)
+ 14   const [editModal, setEditModal] = useState<boolean>(false)
+ 15   const [editableData, setEditableData] = useState<IUser>()
+ 16
+ 17   const handleShowCreateModal = () => setCreateModal(true)
+ 18   const handleCloseCreateModal = () => setCreateModal(false)
+ 19
+ 20   const handleShowEditModal = (data: IUser) => {
+ 21     setEditableData(data)
+ 22     setEditModal(true)
+ 23   }
+ 24
+ 25   const handleCloseEditModal = () => setEditModal(false)
+ 26
+ 27   const fetchItems = async () => {
+ 28     try {
+ 29       const data = await getUsers()
+ 30       setUsers(data)
+ 31     } catch {
+ 32       alert(t('error'))
+ 33     }
+ 34   }
+ 35
+ 36   useEffect(() => {
+ 37     fetchItems()
+ 38   }, [])
+ 39
+ 40   const remove = async (id: string) => {
+ 41     await deleteUser(id)
+ 42     fetchItems()
+ 43   }
+ 44
+ 45   return (
+ 46     <div className={styles.container}>
+ 47       <UserCreateModal fetch={fetchItems} onHide={handleCloseCreateModal} show={createModal} />
+ 48       <UserEditModal item={editableData} fetch={fetchItems} show={editModal} onHide={handleCloseEditModal} />
+ 49
+ 50       <h1 className={styles.title}>{t('users.title')}</h1>
+ 51
+ 52       <p>
+ 53         <button className={styles.primaryButton} onClick={handleShowCreateModal}>
+ 54           {t('users.createNew')}
+ 55         </button>
+ 56       </p>
+ 57
+ 58       <table className={styles.table}>
+ 59         <thead>
+ 60           <tr>
+ 61             <th>{t('users.tableHeaders.id')}</th>
+ 62             <th>{t('users.tableHeaders.firstName')}</th>
+ 63             <th>{t('users.tableHeaders.lastName')}</th>
+ 64             <th>{t('users.tableHeaders.dateOfBirth')}</th>
+ 65             <th>{t('users.tableHeaders.phoneNumber')}</th>
+ 66             <th>{t('users.tableHeaders.email')}</th>
+ 67             <th>{t('users.tableHeaders.role')}</th>
+ 68             <th>{t('users.tableHeaders.companyId')}</th>
+ 69             <th>{t('users.tableHeaders.actions')}</th>
+ 70           </tr>
+ 71         </thead>
+ 72         <tbody>
+ 73           {users.map((user) => (
+ 74             <tr key={user.id}>
+ 75               <td>{user.id}</td>
+ 76               <td>{user.firstName}</td>
+ 77               <td>{user.lastName}</td>
+ 78               <td>{formatDate(user.dateOfBirth)}</td>
+ 79               <td>{user.phoneNumber}</td>
+ 80               <td>{user.email}</td>
+ 81               <td>{user.role}</td>
+ 82               <td>{user.companyId}</td>
+ 83               <td className={styles.actionCell}>
+ 84                 <button className={styles.editButton} onClick={() => handleShowEditModal(user)}>
+ 85                   {t('users.edit')}
+ 86                 </button>
+ 87                 <button className={styles.deleteButton} onClick={() => remove(user.id)}>
+ 88                   {t('users.delete')}
+ 89                 </button>
+ 90               </td>
+ 91             </tr>
+ 92           ))}
+ 93         </tbody>
+ 94       </table>
+ 95     </div>
+ 96   )
+ 97 }
+
+     В.3 Резервне копіювання користувацьких даних
+
+GitHub репозиторій: https://github.com/NureZozuliaOlena/apz-pzpi-22-1-zozulia-olena/blob/main/Lab3/pzpi-22-1-zozulia-olena-lab3-code/src/pages/BackupPage.tsx 
+  1 import React, { useState } from 'react';
+  2 import styles from '../styles/Backup.module.css';
+  3 import { createBackup, restoreDb } from '../http/reportApi';        
+  4 import { useTranslation } from 'react-i18next';
+  5
+  6 const BackupPage = () => {
+  7   const { t } = useTranslation();
+  8   const [createBackupState, setCreateBackupState] = useState('');   
+  9   const [restoreDbState, setRestoreDbState] = useState('');
+ 10   const [file, setFile] = useState<File | null>(null);
+ 11
+ 12   const saveBackup = async () => {
+ 13     await createBackup(createBackupState);
+ 14   };
+ 15
+ 16   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+ 17     if (e.target.files && e.target.files.length > 0) {
+ 18       setFile(e.target.files[0]);
+ 19     }
+ 20   };
+ 21
+ 22   const handleUpload = async () => {
+ 23     if (!file) {
+ 24       alert(t('backup.fileRequired'));
+ 25       return;
+ 26     }
+ 27
+ 28     const formData = new FormData();
+ 29     formData.append('backupFile', file);
+ 30     await restoreDb(formData, restoreDbState);
+ 31   };
+ 32
+ 33   return (
+ 34     <div className={styles.container}>
+ 35       <h2 className={styles.title}>{t('backup.title')}</h2>
+ 36
+ 37       <div className={styles.section}>
+ 38         <h4 className={styles.sectionTitle}>{t('backup.createBackup')}</h4>
+ 39         <input
+ 40           type="text"
+ 41           placeholder={t('backup.backupName')}
+ 42           className={styles.inputField}
+ 43           onChange={(e) => setCreateBackupState(e.target.value)}
+ 44         />
+ 45         <button className={styles.button} onClick={saveBackup}>
+ 46           {t('backup.create')}
+ 47         </button>
+ 48       </div>
+ 49
+ 50       <div className={styles.section}>
+ 51         <h4 className={styles.sectionTitle}>{t('backup.restoreDb')}</h4>
+ 52         <input
+ 53           type="text"
+ 54           placeholder={t('backup.restoreTarget')}
+ 55           className={styles.inputField}
+ 56           onChange={(e) => setRestoreDbState(e.target.value)}
+ 57         />
+ 58
+ 59         <input
+ 60           id="file-upload"
+ 61           type="file"
+ 62           onChange={handleChange}
+ 63           className={styles.fileInput}
+ 64         />
+ 65
+ 66         <label htmlFor="file-upload" className={styles.fileLabel}>
+ 67           {file ? file.name : t('backup.chooseFile')}
+ 68         </label>
+ 69
+ 70         <br />
+ 71         <button className={styles.button} onClick={handleUpload}>
+ 72           {t('backup.restore')}
+ 73         </button>
+ 74       </div>
+ 75     </div>
+ 76   );
+ 77 };
+ 78
+ 79 export default BackupPage;
+2
+
 
