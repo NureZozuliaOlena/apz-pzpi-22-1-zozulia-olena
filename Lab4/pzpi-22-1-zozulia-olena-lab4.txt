@@ -1,1 +1,518 @@
+Міністерство освіти та науки України
+Харківський національний університет радіоелектроніки
+
+
+Кафедра програмної інженерії
+
+
+ЗВІТ
+до лабораторної роботи №4
+з дисципліни “Архітектура програмного забезпечення”
+
+
+Виконала ст. гр ПЗПІ-22-1
+Зозуля Олена Юріївна
+
+Перевірив
+ст. викладач кафедри ПІ
+Сокорчук Ігор Петрович
+
+
+
+
+Харків 2025
+1 ІСТОРІЯ ЗМІН
+№ДатаВерсія звітуОпис змін та виправлень103.06.20250.1Створення звіту203.06.20250.2Додано опис роботи і додатки304.06.20250.3Додано посилання на відеозапис
+2 ЗАВДАННЯ
+     Розробити мобільну частину програмної системи для платформи Android.
+3 ОПИС ВИКОНАНОЇ РОБОТИ
+	Для розробки мобільної частини програмної системи використано мову програмування Kotlin, яка забезпечує зручність при роботі з платформою Android. Було обрано модульну архітектуру, що ґрунтується на розподілі функціональних обов’язків: кожен модуль ізольовано відповідає за конкретну частину системи (авторизація, управління заказами, інвентар, логіка холодильника, загальні утиліти). Компоненти, утиліти та функції для роботи з API розроблені з акцентом на повторне використання.
+	Відеозапис роботи системи наведено в додатку А. ER-діаграму представлено в додатку Б на рисунку Б.1, структуру бази даних – на рисунку Б.2. UML-діаграму прецедентів зображено на рисунку Б.3.
+
+
+
+
+
+
+4 ВИСНОВКИ
+     У ході виконання лабораторної роботи я розробила мобільну частину програмної системи для платформи Android.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ДОДАТОК А
+Відеозапис
+Відеозапис презентації результатів лабораторної роботи: https://youtu.be/MrND7xczJuY 
+Хронологічний опис відеозапису:
+
+00:00 – Вступ
+00:11 – Мета лабораторної роботи
+00:19 – Призначення мобільної частини
+00:38 – Авторизація у системі як звичайний працівник
+00:53 – Можливості користувача
+01:07 – Створення замовлень
+01:15 – Перегляд замовлень
+01:31 – Авторизація у системі як адміністратор компанії
+01:50 – Можливості користувача
+02:05 – Авторизація у системі як адміністратор системи
+02:22 – Можливості користувача
+02:43 – Резервне копіювання бази даних
+03:44 – Відновлення бази даних
+04:19 – Зміна мови
+05:59 – Подяка за перегляд
+
+
+ДОДАТОК Б
+Графічні матеріали
+
+Рисунок Б.1 – ER-діаграма даних
+
+Рисунок Б.2 – Структура бази даних
+
+Рисунок Б.3 – UML-діаграма прецедентів
+
+
+
+
+
+
+
+
+
+ДОДАТОК В
+Програмний код
+     В.1 Математична обробка прикладних даних
+
+GitHub репозиторій: https://github.com/NureZozuliaOlena/apz-pzpi-22-1-zozulia-olena/blob/main/Lab4/pzpi-22-1-zozulia-olena-lab4-code/main/orders/AdminOrdersActivity.kt 
+  1 package com.example.smart_lunch.orders
+  2 
+  3 import android.content.Intent 
+  4 import android.os.Bundle      
+  5 import android.widget.TextView
+  6 import android.widget.Toast
+  7 import androidx.appcompat.app.AppCompatActivity
+  8 import androidx.lifecycle.lifecycleScope
+  9 import androidx.recyclerview.widget.LinearLayoutManager
+ 10 import androidx.recyclerview.widget.RecyclerView
+ 11 import com.example.smart_lunch.core.BackupActivity
+ 12 import com.example.smart_lunch.core.MainActivity
+ 13 import com.example.smart_lunch.R
+ 14 import com.example.smart_lunch.core.RetrofitInstance
+ 15 import com.example.smart_lunch.auth.SessionManager
+ 16 import com.google.android.material.bottomnavigation.BottomNavigationView
+ 17 import kotlinx.coroutines.launch
+ 18
+ 19 class AdminOrdersActivity : AppCompatActivity() {
+ 20
+ 21     private lateinit var ordersRecyclerView: RecyclerView
+ 22     private lateinit var ordersAdapter: UserOrdersAdapter
+ 23     private lateinit var totalAmountTextView: TextView
+ 24
+ 25     override fun onCreate(savedInstanceState: Bundle?) {
+ 26         super.onCreate(savedInstanceState)
+ 27         setContentView(R.layout.activity_admin_orders)
+ 28
+ 29         ordersRecyclerView = findViewById(R.id.ordersRecyclerView)
+ 30         ordersRecyclerView.layoutManager = LinearLayoutManager(this)
+ 31         ordersAdapter = UserOrdersAdapter(emptyList())
+ 32         ordersRecyclerView.adapter = ordersAdapter
+ 33
+ 34         totalAmountTextView = findViewById(R.id.totalAmountTextView)
+ 35
+ 36         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigation)
+ 37
+ 38         val sharedPref = getSharedPreferences("auth", MODE_PRIVATE)
+ 39         val userRole = sharedPref.getString("userRole", null)
+ 40
+ 41         if (userRole == "3") {
+ 42             bottomNav.menu.clear()
+ 43             bottomNav.inflateMenu(R.menu.bottom_nav_menu_superadmin)
+ 44         } else {
+ 45             bottomNav.menu.clear()
+ 46             bottomNav.inflateMenu(R.menu.bottom_nav_menu_admin)
+ 47         }
+ 48
+ 49         bottomNav.selectedItemId = R.id.nav_orders
+ 50
+ 51         bottomNav.setOnItemSelectedListener { item ->
+ 52             when (item.itemId) {
+ 53                 R.id.nav_orders -> true
+ 54                 R.id.nav_backup -> {
+ 55                     startActivity(Intent(this, BackupActivity::class.java))
+ 56                     true
+ 57                 }
+ 58                 R.id.nav_logout -> {
+ 59                     SessionManager.clearToken(this)
+ 60                     startActivity(Intent(this, MainActivity::class.java))
+ 61                     finish()
+ 62                     true
+ 63                 }
+ 64                 else -> false
+ 65             }
+ 66         }
+ 67
+ 68         loadAllOrders()
+ 69     }
+ 70
+ 71     private fun loadAllOrders() {
+ 72         lifecycleScope.launch {
+ 73             try {
+ 74                 val response = RetrofitInstance.getApi().getAllOrders()
+ 75                 if (response.isSuccessful) {
+ 76                     val orders = response.body()
+ 77                     if (orders != null) {
+ 78                         ordersAdapter.updateOrders(orders)
+ 79
+ 80                         val total = orders.sumOf { it.totalAmount ?: 0.0 }
+ 81                         totalAmountTextView.text = "Сума замовлень: %.2f грн".format(total)
+ 82
+ 83                     } else {
+ 84                         Toast.makeText(this@AdminOrdersActivity, "Список замовлень порожній", Toast.LENGTH_SHORT).show()
+ 85                     }
+ 86                 } else {
+ 87                     Toast.makeText(this@AdminOrdersActivity, "Помилка завантаження замовлень: ${response.code()}", Toast.LENGTH_SHORT).show()
+ 88                 }
+ 89             } catch (e: Exception) {
+ 90                 Toast.makeText(this@AdminOrdersActivity, "Помилка: ${e.message}", Toast.LENGTH_SHORT).show()
+ 91             }
+ 92         }
+ 93     }
+ 94 }
+     
+     В.2 Адміністрування бізнес-логіки системи
+
+GitHub репозиторій: https://github.com/NureZozuliaOlena/apz-pzpi-22-1-zozulia-olena/blob/main/Lab4/pzpi-22-1-zozulia-olena-lab4-code/main/fridge/HomeActivity.kt 
+  1 package com.example.smart_lunch.fridge
+  2 
+  3 import android.content.Intent
+  4 import android.os.Bundle
+  5 import android.util.Log
+  6 import android.view.View
+  7 import android.widget.Toast
+  8 import androidx.appcompat.app.AppCompatActivity
+  9 import androidx.lifecycle.lifecycleScope
+ 10 import androidx.recyclerview.widget.LinearLayoutManager
+ 11 import androidx.recyclerview.widget.RecyclerView
+ 12 import com.example.smart_lunch.core.MainActivity
+ 13 import com.example.smart_lunch.R
+ 14 import com.example.smart_lunch.core.RetrofitInstance
+ 15 import com.example.smart_lunch.auth.SessionManager
+ 16 import kotlinx.coroutines.launch
+ 17 import com.example.smart_lunch.dto.FoodItemDto
+ 18 import com.example.smart_lunch.dto.FridgeInventoryDto
+ 19 import com.example.smart_lunch.dto.OrderDto
+ 20 import com.example.smart_lunch.dto.OrderItemDto
+ 21 import com.example.smart_lunch.inventory.FridgeRepository
+ 22 import com.example.smart_lunch.inventory.FridgeWithInventoryAdapter
+ 23 import com.example.smart_lunch.orders.AdminOrdersActivity
+ 24 import com.example.smart_lunch.orders.UserOrdersActivity
+ 25 import com.google.android.material.bottomnavigation.BottomNavigationView
+ 26
+ 27 class HomeActivity : AppCompatActivity() {
+ 28
+ 29     private lateinit var fridgeRepository: FridgeRepository
+ 30     private lateinit var fridgeAdapter: FridgeWithInventoryAdapter
+ 31
+ 32     private var foodItemsList: List<FoodItemDto> = emptyList()
+ 33     private var inventoriesList: List<FridgeInventoryDto> = emptyList()
+ 34
+ 35     override fun onCreate(savedInstanceState: Bundle?) {
+ 36         super.onCreate(savedInstanceState)
+ 37         setContentView(R.layout.activity_home)
+ 38
+ 39         RetrofitInstance.initialize(this)
+ 40
+ 41         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigation)
+ 42         val sharedPref = getSharedPreferences("auth", MODE_PRIVATE)
+ 43         val userRole = sharedPref.getString("userRole", null)
+ 44
+ 45         Log.d("HomeActivity", "User role: $userRole")
+ 46
+ 47         if (userRole == "2") {
+ 48             setContentView(R.layout.activity_home)
+ 49             setupBottomNavForEmployee()
+ 50             setupFridgeView()
+ 51         } else if (userRole == "0") {
+ 52             startActivity(Intent(this, AdminOrdersActivity::class.java))
+ 53             finish()
+ 54
+ 55         } else if (userRole == "3") {
+ 56             startActivity(Intent(this, AdminOrdersActivity::class.java))
+ 57             finish()
+ 58
+ 59         } else {
+ 60             bottomNav.visibility = View.GONE
+ 61             Log.e("HomeActivity", "Невідома роль: $userRole")
+ 62         }
+ 63             fridgeRepository = FridgeRepository(applicationContext)
+ 64
+ 65         fridgeAdapter = FridgeWithInventoryAdapter(emptyList(), emptyList(), emptyList()) { inventory ->
+ 66             placeOrder(inventory)
+ 67         }
+ 68
+ 69         val fridgeRecyclerView = findViewById<RecyclerView>(R.id.fridgeRecyclerView)
+ 70         fridgeRecyclerView.layoutManager = LinearLayoutManager(this)
+ 71         fridgeRecyclerView.adapter = fridgeAdapter
+ 72
+ 73         observeData()
+ 74
+ 75         lifecycleScope.launch {
+ 76             fridgeRepository.loadFridges()
+ 77             fridgeRepository.loadInventories()
+ 78             fridgeRepository.loadFoodItems()
+ 79         }
+ 80     }
+ 81
+ 82     private fun observeData() {
+ 83         fridgeRepository.foodItems.observe(this) { foodItems ->
+ 84             foodItemsList = foodItems ?: emptyList()
+ 85             updateAdapter()
+ 86         }
+ 87
+ 88         fridgeRepository.inventories.observe(this) { inventories ->
+ 89             inventoriesList = inventories ?: emptyList()
+ 90             updateAdapter()
+ 91         }
+ 92
+ 93         fridgeRepository.error.observe(this) { error ->
+ 94             if (error != null) {
+ 95                 Toast.makeText(this, error, Toast.LENGTH_LONG).show()
+ 96             }
+ 97         }
+ 98     }
+ 99
+100     private fun updateAdapter() {
+101         val fridges = fridgeRepository.fridges.value ?: emptyList()
+102         fridgeAdapter.updateData(fridges, inventoriesList, foodItemsList)
+103     }
+104
+105     private fun placeOrder(inventory: FridgeInventoryDto) {
+106         val sharedPref = getSharedPreferences("auth", MODE_PRIVATE)
+107         val userId = sharedPref.getString("userId", null)
+108
+109         if (userId == null) {
+110             Toast.makeText(this, getString(R.string.user_not_found), Toast.LENGTH_SHORT).show()
+111             return
+112         }
+113
+114         val foodItem = foodItemsList.find { it.id == inventory.foodItemId }
+115         val price = foodItem?.price ?: 0.0
+116
+117         if (price <= 0.0) {
+118             Toast.makeText(this, getString(R.string.price_not_found), Toast.LENGTH_SHORT).show()
+119             return
+120         }
+121
+122         val orderItem = OrderItemDto(
+123             fridgeInventoryId = inventory.id.toString(),
+124             quantity = 1,
+125             price = price
+126         )
+127
+128         val order = OrderDto(
+129             userId = userId,
+130             fridgeId = inventory.fridgeId.toString(),
+131             totalAmount = price,
+132             items = listOf(orderItem)
+133         )
+134
+135         lifecycleScope.launch {
+136             try {
+137                 val response = RetrofitInstance.getApi().createOrder(order)
+138                 if (response.isSuccessful) {
+139                     Toast.makeText(this@HomeActivity, getString(R.string.order_created), Toast.LENGTH_SHORT).show()
+140                 } else {
+141                     Toast.makeText(this@HomeActivity, "${getString(R.string.error)}: ${response.code()}", Toast.LENGTH_SHORT).show()
+142                 }
+143             } catch (e: Exception) {
+144                 Toast.makeText(this@HomeActivity, "${getString(R.string.error)}: ${e.message}", Toast.LENGTH_SHORT).show()
+145             }
+146         }
+147     }
+148
+149     private fun setupBottomNavForEmployee() {
+150         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigation)
+151         bottomNav.menu.clear()
+152         bottomNav.inflateMenu(R.menu.bottom_nav_menu_employee)
+153         bottomNav.visibility = View.VISIBLE
+154
+155         bottomNav.setOnItemSelectedListener { item ->
+156             when (item.itemId) {
+157                 R.id.nav_fridges -> true
+158                 R.id.nav_orders -> {
+159                     startActivity(Intent(this, UserOrdersActivity::class.java))
+160                     true
+161                 }
+162                 R.id.nav_logout -> {
+163                     SessionManager.clearToken(this)
+164                     startActivity(Intent(this, MainActivity::class.java))
+165                     finish()
+166                     true
+167                 }
+168                 else -> false
+169             }
+170         }
+171     }
+172
+173     private fun setupFridgeView() {
+174         fridgeRepository = FridgeRepository(applicationContext)
+175         fridgeAdapter = FridgeWithInventoryAdapter(emptyList(), emptyList(), emptyList()) { inventory ->
+176             placeOrder(inventory)
+177         }
+178
+179         val fridgeRecyclerView = findViewById<RecyclerView>(R.id.fridgeRecyclerView)
+180         fridgeRecyclerView.layoutManager = LinearLayoutManager(this)
+181         fridgeRecyclerView.adapter = fridgeAdapter
+182
+183         observeData()
+184
+185         lifecycleScope.launch {
+186             fridgeRepository.loadFridges()
+187             fridgeRepository.loadInventories()
+188             fridgeRepository.loadFoodItems()
+189         }
+190     }
+191
+192 }
+     В.3 Резервне копіювання користувацьких даних
+
+GitHub репозиторій: https://github.com/NureZozuliaOlena/apz-pzpi-22-1-zozulia-olena/blob/main/Lab4/pzpi-22-1-zozulia-olena-lab4-code/main/core/BackupActivity.kt
+  1 package com.example.smart_lunch.core
+  2 
+  3 import android.content.Intent
+  4 import android.os.Bundle
+  5 import android.widget.Button
+  6 import android.widget.Toast
+  7 import androidx.appcompat.app.AppCompatActivity
+  8 import androidx.lifecycle.lifecycleScope
+  9 import com.example.smart_lunch.R
+ 10 import com.example.smart_lunch.auth.SessionManager
+ 11 import com.example.smart_lunch.orders.AdminOrdersActivity
+ 12 import com.google.android.material.bottomnavigation.BottomNavigationView
+ 13 import kotlinx.coroutines.Dispatchers
+ 14 import kotlinx.coroutines.launch
+ 15 import kotlinx.coroutines.withContext
+ 16 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+ 17 import okhttp3.MultipartBody
+ 18 import okhttp3.RequestBody.Companion.asRequestBody
+ 19 import java.io.File
+ 20 import java.io.FileOutputStream
+ 21
+ 22 class BackupActivity : AppCompatActivity() {
+ 23
+ 24     private lateinit var backupButton: Button
+ 25     private lateinit var restoreButton: Button
+ 26
+ 27     private lateinit var backupFilePath: String
+ 28     private lateinit var backupFolderPath: String
+ 29
+ 30     override fun onCreate(savedInstanceState: Bundle?) {
+ 31         super.onCreate(savedInstanceState)
+ 32         setContentView(R.layout.activity_backup)
+ 33
+ 34         backupFolderPath = getExternalFilesDir(null)?.absolutePath ?: ""
+ 35         backupFilePath = "$backupFolderPath/SmartLunchDatabaseBackup.bak"
+ 36
+ 37         backupButton = findViewById(R.id.backupButton)
+ 38         restoreButton = findViewById(R.id.restoreButton)
+ 39
+ 40         backupButton.setOnClickListener {
+ 41             performBackup()
+ 42         }
+ 43
+ 44         restoreButton.setOnClickListener {
+ 45             val file = File(backupFilePath)
+ 46             if (file.exists()) {
+ 47                 performRestore(file)
+ 48             } else {
+ 49                 Toast.makeText(this, "Файл не знайдено: $backupFilePath", Toast.LENGTH_SHORT).show()
+ 50             }
+ 51         }
+ 52
+ 53         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
+ 54         bottomNav.selectedItemId = R.id.nav_backup
+ 55
+ 56         bottomNav.setOnItemSelectedListener { item ->
+ 57             when (item.itemId) {
+ 58                 R.id.nav_orders -> {
+ 59                     startActivity(Intent(this, AdminOrdersActivity::class.java))
+ 60                     true
+ 61                 }
+ 62                 R.id.nav_backup -> true
+ 63                 R.id.nav_logout -> {
+ 64                     SessionManager.clearToken(this)
+ 65                     startActivity(Intent(this, MainActivity::class.java))
+ 66                     finish()
+ 67                     true
+ 68                 }
+ 69                 else -> false
+ 70             }
+ 71         }
+ 72     }
+ 73
+ 74     private fun performBackup() {
+ 75         lifecycleScope.launch {
+ 76             try {
+ 77                 val response = RetrofitInstance.getApi().createBackup()
+ 78
+ 79                 if (response.isSuccessful && response.body() != null) {
+ 80                     val body = response.body()!!
+ 81                     withContext(Dispatchers.IO) {
+ 82                         val file = File(backupFilePath)
+ 83                         body.byteStream().use { input ->
+ 84                             FileOutputStream(file).use { output ->
+ 85                                 input.copyTo(output)
+ 86                             }
+ 87                         }
+ 88                     }
+ 89                     Toast.makeText(this@BackupActivity, "Бекап збережено: $backupFilePath", Toast.LENGTH_SHORT).show()
+ 90                 } else {
+ 91                     Toast.makeText(this@BackupActivity, "Помилка: ${response.code()}", Toast.LENGTH_SHORT).show()
+ 92                 }
+ 93             } catch (e: Exception) {
+ 94                 Toast.makeText(this@BackupActivity, "Помилка бекапу: ${e.message}", Toast.LENGTH_SHORT).show()
+ 95             }
+ 96         }
+ 97     }
+ 98
+ 99     private fun performRestore(file: File) {
+100         lifecycleScope.launch {
+101             try {
+102                 val requestBody = file.asRequestBody("application/octet-stream".toMediaTypeOrNull())
+103                 val part = MultipartBody.Part.createFormData("backupFile", file.name, requestBody)
+104
+105                 val response = RetrofitInstance.getApi().restoreBackup(part)
+106
+107                 if (response.isSuccessful) {
+108                     Toast.makeText(this@BackupActivity, "Успішно відновлено", Toast.LENGTH_SHORT).show()
+109                 } else {
+110                     Toast.makeText(this@BackupActivity, "Помилка відновлення: ${response.code()}", Toast.LENGTH_SHORT).show()
+111                 }
+112             } catch (e: Exception) {
+113                 Toast.makeText(this@BackupActivity, "Помилка відновлення: ${e.message}", Toast.LENGTH_SHORT).show()
+114             }
+115         }
+116     }
+117
+118
+119 }
+
+2
+
 
