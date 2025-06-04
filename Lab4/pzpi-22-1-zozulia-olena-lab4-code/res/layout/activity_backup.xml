@@ -1,0 +1,32 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp">
+
+    <Button
+        android:id="@+id/backupButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Створити резервну копію"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="16dp" />
+
+    <Button
+        android:id="@+id/restoreButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Відновити базу даних"
+        android:layout_below="@id/backupButton"
+        android:layout_marginBottom="16dp" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="?android:attr/windowBackground"
+        app:itemIconTint="@color/nav_item_color"
+        app:itemTextColor="@color/nav_item_color"
+        app:menu="@menu/bottom_nav_menu_superadmin" />
+</RelativeLayout>

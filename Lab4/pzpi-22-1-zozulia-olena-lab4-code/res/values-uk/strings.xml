@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">SmartLunch</string>
+    <string name="welcome_message">Ласкаво просимо!</string>
+    <string name="user_not_found">Користувача не знайдено</string>
+    <string name="price_not_found">Ціна не знайдена або дорівнює 0</string>
+    <string name="order_created">Замовлення створено!</string>
+    <string name="error">Помилка</string>
+    <string name="unknown_role">Невідома роль</string>
+    <string name="fridge_number">Холодильник №%1$d</string>
+    <string name="enter_email_password">Введіть email і пароль</string>
+    <string name="login_successful">Успішний вхід</string>
+    <string name="login_failed">Не вдалося увійти</string>
+    <string name="login_error">Помилка: %1$s</string>
+    <string name="user_id_not_found">ID користувача не знайдено у SharedPreferences</string>
+    <string name="empty_orders_list">Список замовлень порожній</string>
+    <string name="orders_loading_error">Помилка завантаження замовлень</string>
+    <string name="error_with_message">Помилка: %1$s</string>
+    <string name="nav_all_orders">Усі замовлення</string>
+    <string name="nav_backup">Бекап</string>
+    <string name="nav_logout">Вийти</string>
+    <string name="nav_fridges">Холодильники</string>
+    <string name="nav_my_orders">Мої замовлення</string>
+    <string name="quantity_format">Кількість: %d</string>
+    <string name="unknown_name">Невідома назва</string>
+    <string name="email_hint">Електронна пошта</string>
+    <string name="password_hint">Пароль</string>
+    <string name="login_button">Увійти</string>
+    <string name="product_name">Назва товару</string>
+    <string name="quantity">Кількість</string>
+    <string name="add_button">Додати</string>
+    <string name="amount_format">Сума: %1$.2f грн</string>
+    <string name="status_format">Статус: %1$d</string>
+    <string name="date_format">Дата: %1$s</string>
+
+</resources>
